@@ -38,6 +38,7 @@ int readrest (mdsys_t *sys, char restfile[BLEN]) {
     FILE *fp;
 
     fp=fopen(restfile,"r");
+
     if(fp) {
         for (i=0; i<sys->natoms; ++i) {
             fscanf(fp,"%lf%lf%lf",sys->rx+i, sys->ry+i, sys->rz+i);
@@ -46,6 +47,7 @@ int readrest (mdsys_t *sys, char restfile[BLEN]) {
             fscanf(fp,"%lf%lf%lf",sys->vx+i, sys->vy+i, sys->vz+i);
         }
         fclose(fp);
+
         azzero(sys->fx, sys->natoms);
         azzero(sys->fy, sys->natoms);
         azzero(sys->fz, sys->natoms);

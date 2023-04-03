@@ -12,11 +12,11 @@
 /* main */
 int main(int argc, char **argv)
 {
-    int nprint, return_value=0;
+    int nprint, return_value;
     char restfile[BLEN], trajfile[BLEN], ergfile[BLEN];
-    FILE *traj,*erg;
+    FILE *traj=NULL,*erg=NULL;
     mdsys_t sys;
-    double t_start;
+    double t_start=0.0;
 
     
     /* initialize MPI communicator */
@@ -25,8 +25,12 @@ int main(int argc, char **argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &sys.mpirank);
     MPI_Comm_size(MPI_COMM_WORLD, &sys.nsize);
     // DEBUG: let each process print its rank
+    printf("\n");
     printf("Rank %d of %d\n", sys.mpirank, sys.nsize);
 
+    #ifdef MPICH
+        printf("MPICH is defined\n");
+    #endif
 
     // Initialization operations for the master (input reading, print info, etc.)
     if (sys.mpirank == 0) {
@@ -44,7 +48,6 @@ int main(int argc, char **argv)
             return return_value;
         }
 
-
         /* allocate memory */
         // NB: other processes are used for forces computations only, 
         // they don't need velocity vectors and have f_mpi vectors for forces
@@ -55,14 +58,6 @@ int main(int argc, char **argv)
         sys.fy=(double *)malloc(sys.natoms*sizeof(double));
         sys.fz=(double *)malloc(sys.natoms*sizeof(double));
 
-        /* read restfile */
-        return_value = readrest(&sys, restfile);
-        if (return_value != 0) {
-            printf("Error reading restart file\n");
-            return return_value;
-        }
-
-        
     }
 
     // Broadcast necessary system parameters to all processes (to be reviewed)
@@ -75,7 +70,7 @@ int main(int argc, char **argv)
     MPI_Bcast(&sys.nsteps, 1, MPI_INT, 0, sys.mpicomm);
     MPI_Bcast(&sys.dt, 1, MPI_DOUBLE, 0, sys.mpicomm);
     MPI_Bcast(&sys.nfi, 1, MPI_INT, 0, sys.mpicomm);
-    
+
 
     // Allocate memory for positions
     sys.rx=(double *)malloc(sys.natoms*sizeof(double));
@@ -87,10 +82,23 @@ int main(int argc, char **argv)
     sys.fz_mpi=(double *)malloc(sys.natoms*sizeof(double));
 
 
+    /* read restfile */
+    if (sys.mpirank == 0) {
+        return_value = readrest(&sys, restfile);
+        if (return_value != 0) {
+            printf("Error reading restart file\n");
+            return return_value;
+        }
+    }
+
     /* initialize forces and energies.*/
     sys.nfi=0;
     force(&sys);
-    ekin(&sys);
+
+
+    if (sys.mpirank == 0) {
+        ekin(&sys);
+    }
 
     
     /* master manages output files */
@@ -122,7 +130,11 @@ int main(int argc, char **argv)
 
         /* propagate system and recompute energies */
         velverlet(&sys);
-        ekin(&sys);
+
+        /* compute kinectic energy */
+        if (sys.mpirank == 0) {
+            ekin(&sys);
+        }
     }
     /**************************************************/
 

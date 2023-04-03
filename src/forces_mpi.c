@@ -19,7 +19,7 @@ void force(mdsys_t *sys)
     int i,j,i_mpi;
     //new variables for the optimization
     double c12,c6,rcsq, rsq, rm6, rm2;
-    // variable for potential energy amomngst mpi processes
+    // variable for potential energy amongst mpi processes
     double epot=0.0;
 
     /* set master energy and forces to zero */
@@ -49,7 +49,7 @@ void force(mdsys_t *sys)
     for(i=0; i < (sys->natoms); i += sys->nsize) {
 
         i_mpi = i + sys->mpirank;
-        if (i_mpi >= (sys->natoms - 1)) break;
+        if (i_mpi >= sys->natoms) break;
 
         for(j=0; j < (sys->natoms); ++j) { 
             
@@ -67,7 +67,7 @@ void force(mdsys_t *sys)
                 //remove the expensive pow() and division functions from the inner loop
                 double rm6,rm2; rm2=1.0/rsq; rm6=rm2*rm2*rm2;
                 ffac = (12.0*c12*rm6 - 6.0*c6)*rm6*rm2;
-                sys->epot += 0.5*rm6*(c12*rm6 - c6); 
+                epot += 0.5*rm6*(c12*rm6 - c6); 
 
                 sys->fx_mpi[i_mpi] += rx*ffac;
                 sys->fy_mpi[i_mpi] += ry*ffac;

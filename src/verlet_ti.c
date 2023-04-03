@@ -31,12 +31,25 @@ static void velverlet_second_half(mdsys_t *sys)
 
 /* velocity verlet */
 void velverlet(mdsys_t *sys)
-{
-    /* first part: propagate velocities by half and positions by full step */
-    velverlet_first_half(sys);
-    /* compute forces and potential energy */
-    force(sys);
-    /* second part: propagate velocities by another half step */
-    velverlet_second_half(sys);
+{   
+    #ifdef MPICH
+        /* first part: propagate velocities by half and positions by full step */
+        if (sys->mpirank == 0) {
+            velverlet_first_half(sys);
+        }
+        /* compute forces and potential energy */
+        force(sys);
+        /* second part: propagate velocities by another half step */
+        if (sys->mpirank == 0) {
+            velverlet_second_half(sys);
+        }
+    #else
+        /* first part: propagate velocities by half and positions by full step */
+        velverlet_first_half(sys);
+        /* compute forces and potential energy */
+        force(sys);
+        /* second part: propagate velocities by another half step */
+        velverlet_second_half(sys);
+    #endif
 }
 
