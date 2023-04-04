@@ -1,4 +1,4 @@
-#include <mdlib.h>
+#include <mdlib-util.h>
 #include <string.h>
 #include <ctype.h>
 

@@ -1,3 +1,4 @@
+#include <mdlib-util.h>
 #include <mdlib.h>
 #include <math.h>
 
