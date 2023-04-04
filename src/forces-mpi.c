@@ -14,7 +14,7 @@ static double pbc(double x, const double boxby2)
 /* compute forces */
 void force(mdsys_t *sys)
 {
-    double r,ffac;
+    double ffac;
     double rx,ry,rz;
     int i,j,i_mpi;
     //new variables for the optimization

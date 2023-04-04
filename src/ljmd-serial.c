@@ -31,6 +31,7 @@ int main(int argc, char **argv)
 
     // print nprint
     printf("nprint = %d\n", nprint);
+    
 
     /* allocate memory */
     sys.rx=(double *)malloc(sys.natoms*sizeof(double));

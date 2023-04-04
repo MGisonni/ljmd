@@ -3,13 +3,8 @@
 
 // for input and output declarations
 #include <stdio.h>
-#include <mpi.h>
+// #include <mpi.h>
 
-
-// include <mpi.h> library if MPI is defined
-// #ifdef MPICH
-//     #include <mpi.h>
-// #endif
 
 /* generic file- or pathname buffer length */
 #define BLEN 200
@@ -20,9 +15,12 @@ static const double mvsq2e=2390.05736153349; /* m*v^2 in kcal/mol */
 
 /* structure to hold the complete information
  * about the MD system */
-#ifdef MPICH
-    // #include <mpi.h>
-    struct _mdsys {
+
+
+// include <mpi.h> library if MPI is defined
+#ifdef MPIYES
+    #include <mpi.h>
+    struct _mdsys_mpi {
         int natoms,nfi,nsteps;
         double dt, mass, epsilon, sigma, box, rcut;
         double ekin, epot, temp;
@@ -34,19 +32,24 @@ static const double mvsq2e=2390.05736153349; /* m*v^2 in kcal/mol */
         int nsize, mpirank;
         // as well as force vectors for parallelization
         double *fx_mpi, *fy_mpi, *fz_mpi;
-    };
+};
 #else
-    struct _mdsys {
-        int natoms,nfi,nsteps;
-        double dt, mass, epsilon, sigma, box, rcut;
-        double ekin, epot, temp;
-        double *rx, *ry, *rz;
-        double *vx, *vy, *vz;
-        double *fx, *fy, *fz;
-    };
-#endif       
+struct _mdsys_nmpi {
+    int natoms,nfi,nsteps;
+    double dt, mass, epsilon, sigma, box, rcut;
+    double ekin, epot, temp;
+    double *rx, *ry, *rz;
+    double *vx, *vy, *vz;
+    double *fx, *fy, *fz;
+};
+#endif
 
-typedef struct _mdsys mdsys_t;
+
+#ifdef MPICH
+    typedef struct _mdsys_mpi mdsys_t;
+#else
+    typedef struct _mdsys_nmpi mdsys_t;
+#endif
 
 // compute forces
 void force(mdsys_t *sys);

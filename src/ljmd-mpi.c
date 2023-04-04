@@ -28,8 +28,11 @@ int main(int argc, char **argv)
     printf("\n");
     printf("Rank %d of %d\n", sys.mpirank, sys.nsize);
 
+    // NB: kinda useless since this code runs only if MPICH is defined
     #ifdef MPICH
         printf("MPICH is defined\n");
+    #else
+        printf("MPICH is not defined\n");
     #endif
 
     // Initialization operations for the master (input reading, print info, etc.)
@@ -166,6 +169,9 @@ int main(int argc, char **argv)
     free(sys.fx_mpi);
     free(sys.fy_mpi);
     free(sys.fz_mpi);
+
+    /* finalize MPI */
+    MPI_Finalize();
 
     return 0;
 }
