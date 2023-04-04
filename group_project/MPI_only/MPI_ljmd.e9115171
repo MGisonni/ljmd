@@ -1,0 +1,11 @@
+-------------------------------------------------------------------------------
+There are messages associated with the following module(s):
+-------------------------------------------------------------------------------
+
+intel/18.0.3.222:
+This module is deprecated and will be removed from the system.
+Please switch to a newer compiler.
+
+-------------------------------------------------------------------------------
+
+MPI_FOUND This application will compile with MPI
