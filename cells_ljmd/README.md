@@ -1,1 +1,0 @@
-Starting group project
