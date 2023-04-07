@@ -1,0 +1,5 @@
+Intel oneAPI provides the following components:
+  - Intel C++ Compiler 2021.1
+  - Intel Fortran Compiler 2021.1
+  - Intel Math Kernel Library 2021.1
+  - The gdb-oneapi debugger 10.0.0 (an extension of standard gdb
