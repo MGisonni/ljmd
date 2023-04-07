@@ -10,13 +10,13 @@ Most of the following can be found in the main `ljmd.c` code as well as in the `
 
 + Subdivide the `box` in the maximum number of (cubic) cells of radius greater or equal than `rcut` as
 
-    sys.cell_size = sys.box/((int) (sys.box/sys.rcut));  // surely greater or equal than cutoff
-    sys.ncell_x   = (int) (sys.box/sys.rcut);            // number of cells in each direction
-    sys.ncell     = sys.ncell_x*sys.ncell_x*sys.ncell_x; // total number of cells
+	    sys.cell_size = sys.box/((int) (sys.box/sys.rcut));  // surely greater or equal than cutoff
+	    sys.ncell_x   = (int) (sys.box/sys.rcut);            // number of cells in each direction
+	    sys.ncell     = sys.ncell_x*sys.ncell_x*sys.ncell_x; // total number of cells
 
 + Allocate an array of structures `cells_t` of size the total number of cells in the box. Hence initialize every cell in a 3D indices fashion as
 
-    int cell_index = i + j*ncell_x + k*ncell_x*ncell_x;
+	    int cell_index = i + j*ncell_x + k*ncell_x*ncell_x;
 
 + Distribute atoms in each cell according to their position in the box, accounting for boundary conditions (atoms might get out of the box during time evoluton) and for negative coordinates (which I rescale to positive in order to apply `%` remainders operations)
 
@@ -26,12 +26,12 @@ Most of the following can be found in the main `ljmd.c` code as well as in the `
 
 + At every time step, we first compute the forces between different cells through three nested loops as
 
-    /* loop over all pairs of cells */
-    for (i=0; i<sys->npairs; i++) {
-        /* loop over all particles in first cell */
-        for (j=0; j<cells[sys->pairs[2*i]].catoms; j++) {
-            /* loop over all particles in second cell */
-            for (k=0; k<cells[sys->pairs[2*i+1]].catoms; k++) {
+	    /* loop over all pairs of cells */
+	    for (i=0; i<sys->npairs; i++) {
+		/* loop over all particles in first cell */
+		for (j=0; j<cells[sys->pairs[2*i]].catoms; j++) {
+		    /* loop over all particles in second cell */
+		    for (k=0; k<cells[sys->pairs[2*i+1]].catoms; k++) {
 
     notice that in this way we can directly apply Newton 3rd law.
 
@@ -63,24 +63,24 @@ Introducing MPI I adopted the following:
 
 + The split of forces computation amongst different processes is performed assigning to each process the (roughly) same amount of cells pairs to compute forces on, as in
 
-    /* loop over all pairs of cells, distribute among processes */
-    for (i_mpi=0; i_mpi<sys->npairs; i_mpi=i_mpi+sys->mpisize) {
-        i = i_mpi + sys->mpirank;
-        if (i >= sys->npairs) break;
-        int cell1 = sys->pairs[2*i];
-        int cell2 = sys->pairs[2*i+1];
-        /* loop over all particles in first cell */
-        for (j=0; j<cells[sys->pairs[2*i]].catoms; j++) {
-            /* loop over all particles in second cell */
-            for (k=0; k<cells[sys->pairs[2*i+1]].catoms; k++) {
+	    /* loop over all pairs of cells, distribute among processes */
+	    for (i_mpi=0; i_mpi<sys->npairs; i_mpi=i_mpi+sys->mpisize) {
+		i = i_mpi + sys->mpirank;
+		if (i >= sys->npairs) break;
+		int cell1 = sys->pairs[2*i];
+		int cell2 = sys->pairs[2*i+1];
+		/* loop over all particles in first cell */
+		for (j=0; j<cells[sys->pairs[2*i]].catoms; j++) {
+		    /* loop over all particles in second cell */
+		    for (k=0; k<cells[sys->pairs[2*i+1]].catoms; k++) {
                 
 
 + For the *inter* cell forces, the redistribution is performed on the total number of cells as in
 
-    // loop over all cells, distribute among processes */ 
-    for (i_mpi=0; i_mpi<sys->ncell; i_mpi=i_mpi+sys->mpisize) {
-        i = i_mpi + sys->mpirank;
-        if (i >= sys->ncell) break;
+	    // loop over all cells, distribute among processes */ 
+	    for (i_mpi=0; i_mpi<sys->ncell; i_mpi=i_mpi+sys->mpisize) {
+		i = i_mpi + sys->mpirank;
+		if (i >= sys->ncell) break;
 
 + Once all processes are done with forces computation, we perform a reduction of forces and potential energy to the master.
 
@@ -107,7 +107,7 @@ Introducing MPI I adopted the following:
 
 The simulation were run on 1,2,4,6,8 nodes of the `regular1` partition in `Ulysses` cluster. The following modules were loaded
 
-    module load cmake/3.15.4
+    	module load cmake/3.15.4
 	module load intel/2021.1
 	module load openmpi3
 
