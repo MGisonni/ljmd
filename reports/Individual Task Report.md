@@ -1,3 +1,7 @@
+### Report for the *Best Practices in Scientific Software Development*
+The following report contains my contribution to the group project https://github.com/Project-MD-GPS/ljmd by GPS organization.
+A report about my cell implementations is found in this same folder. 
+
 # MPI implementation
 
 For the overall MPI implementation I adopted the following:
